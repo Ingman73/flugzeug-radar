@@ -9,91 +9,122 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: system-ui, sans-serif; background: #f5f5f5; color: #1a1a1a; }
 
-    header {
-      background: #fff;
-      border-bottom: 1px solid #e0e0e0;
-      padding: 1rem 1.5rem;
-    }
+    header { background: #fff; border-bottom: 1px solid #e0e0e0; padding: 1rem 1.5rem; }
     header h1 { font-size: 20px; font-weight: 600; }
 
     #controls {
-      background: #fff;
-      padding: 1rem 1.5rem;
+      background: #fff; padding: 1rem 1.5rem;
       border-bottom: 1px solid #e0e0e0;
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
+      display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
     }
     #controls input[type="text"] {
-      flex: 1;
-      min-width: 200px;
-      padding: 8px 12px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 14px;
-      outline: none;
+      flex: 1; min-width: 200px; padding: 8px 12px;
+      border: 1px solid #ccc; border-radius: 8px; font-size: 14px; outline: none;
     }
     #controls input[type="text"]:focus { border-color: #378ADD; }
     #controls input[type="number"] {
-      width: 80px;
-      padding: 8px 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 14px;
-      outline: none;
+      width: 80px; padding: 8px 10px;
+      border: 1px solid #ccc; border-radius: 8px; font-size: 14px; outline: none;
     }
     #controls label { font-size: 14px; color: #555; }
     #controls button {
-      padding: 8px 20px;
-      background: #378ADD;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      font-size: 14px;
-      cursor: pointer;
-      font-weight: 500;
+      padding: 8px 20px; background: #378ADD; color: #fff;
+      border: none; border-radius: 8px; font-size: 14px; cursor: pointer; font-weight: 500;
     }
     #controls button:hover { background: #185FA5; }
     #controls button:disabled { background: #aaa; cursor: default; }
 
     #status-bar {
-      padding: 8px 1.5rem;
-      font-size: 13px;
-      color: #555;
-      background: #fafafa;
-      border-bottom: 1px solid #e0e0e0;
-      min-height: 34px;
+      padding: 8px 1.5rem; font-size: 13px; color: #555;
+      background: #fafafa; border-bottom: 1px solid #e0e0e0; min-height: 34px;
     }
 
     #main { display: flex; height: calc(100vh - 160px); }
     #map { flex: 1; }
 
     #sidebar {
-      width: 300px;
-      background: #fff;
-      border-left: 1px solid #e0e0e0;
-      overflow-y: auto;
-      padding: 12px;
+      width: 300px; background: #fff;
+      border-left: 1px solid #e0e0e0; overflow-y: auto; padding: 12px;
     }
     #sidebar h2 { font-size: 14px; color: #555; font-weight: 500; margin-bottom: 10px; }
 
     .plane-card {
-      background: #f9f9f9;
-      border: 1px solid #e5e5e5;
-      border-radius: 8px;
-      padding: 10px 12px;
-      margin-bottom: 8px;
-      cursor: pointer;
+      background: #f9f9f9; border: 1px solid #e5e5e5;
+      border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; cursor: pointer;
     }
     .plane-card:hover { border-color: #378ADD; background: #EBF4FD; }
     .plane-card .callsign { font-size: 15px; font-weight: 600; }
     .plane-card .detail { font-size: 12px; color: #666; margin-top: 5px; line-height: 1.7; }
     .plane-card .detail b { color: #1a1a1a; }
     #empty-state { text-align: center; color: #aaa; font-size: 14px; margin-top: 40px; }
+
+    /* Consent Banner */
+    #consent-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex; align-items: flex-end; justify-content: center;
+      z-index: 9999; padding: 1rem;
+    }
+    #consent-box {
+      background: #fff; border-radius: 12px; padding: 1.5rem;
+      max-width: 620px; width: 100%; margin-bottom: 1rem;
+    }
+    #consent-box h2 { font-size: 16px; font-weight: 600; margin-bottom: 10px; }
+    #consent-box p { font-size: 13px; color: #444; line-height: 1.6; margin-bottom: 10px; }
+    #consent-box ul { font-size: 13px; color: #444; line-height: 1.9; margin: 0 0 1rem 1.2rem; }
+    #consent-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+    #btn-accept {
+      padding: 9px 22px; background: #378ADD; color: #fff;
+      border: none; border-radius: 8px; font-size: 14px; cursor: pointer; font-weight: 500;
+    }
+    #btn-accept:hover { background: #185FA5; }
+    #btn-decline {
+      padding: 9px 22px; background: #fff; color: #555;
+      border: 1px solid #ccc; border-radius: 8px; font-size: 14px; cursor: pointer;
+    }
+    #btn-decline:hover { background: #f5f5f5; }
+
+    /* Abgelehnt-Ansicht */
+    #consent-denied {
+      display: none; position: fixed; inset: 0; background: #f5f5f5;
+      align-items: center; justify-content: center; flex-direction: column;
+      gap: 14px; text-align: center; padding: 2rem; z-index: 9998;
+    }
+    #consent-denied h2 { font-size: 18px; font-weight: 600; }
+    #consent-denied p { font-size: 14px; color: #555; max-width: 420px; line-height: 1.6; }
+    #btn-reopen {
+      padding: 9px 22px; background: #378ADD; color: #fff;
+      border: none; border-radius: 8px; font-size: 14px; cursor: pointer; font-weight: 500;
+    }
+    #btn-reopen:hover { background: #185FA5; }
   </style>
 </head>
 <body>
+
+<!-- Consent Banner -->
+<div id="consent-overlay">
+  <div id="consent-box">
+    <h2>🍪 Datenschutzhinweis</h2>
+    <p>Diese App nutzt externe Dienste, bei denen deine IP-Adresse übertragen wird:</p>
+    <ul>
+      <li><strong>OpenStreetMap</strong> – Kartenmaterial (tile.openstreetmap.org)</li>
+      <li><strong>Nominatim</strong> – Ortssuche (nominatim.openstreetmap.org)</li>
+      <li><strong>OpenSky Network</strong> – Echtzeit-Flugdaten (opensky-network.org)</li>
+    </ul>
+    <p>Durch Klick auf <em>Akzeptieren</em> stimmst du der Nutzung dieser Dienste gemäß DSGVO zu. Du kannst die App auch ohne Zustimmung nicht vollständig nutzen, da die Kartenfunktion diese Dienste zwingend benötigt.</p>
+    <div id="consent-buttons">
+      <button id="btn-accept">Akzeptieren & App starten</button>
+      <button id="btn-decline">Ablehnen</button>
+    </div>
+  </div>
+</div>
+
+<!-- Abgelehnt-Ansicht -->
+<div id="consent-denied">
+  <h2>✈ Flugzeug Radar</h2>
+  <p>Die App kann ohne Zustimmung nicht genutzt werden, da externe Dienste für Karte und Flugdaten erforderlich sind.</p>
+  <button id="btn-reopen">Datenschutzhinweis erneut anzeigen</button>
+</div>
 
 <header>
   <h1>✈ Flugzeug Radar</h1>
@@ -119,15 +150,51 @@
   </div>
 </div>
 
-<!-- Leaflet wird hier geladen, BEVOR unser Script läuft -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
-  const map = L.map('map').setView([51.2, 6.8], 7);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap',
-    maxZoom: 14
-  }).addTo(map);
-  const markerGroup = L.layerGroup().addTo(map);
+  let map, markerGroup, mapInitialized = false;
+
+  // Consent-Logik
+  const overlay = document.getElementById('consent-overlay');
+  const denied = document.getElementById('consent-denied');
+
+  document.getElementById('btn-accept').addEventListener('click', () => {
+    overlay.style.display = 'none';
+    localStorage.setItem('consent', 'accepted');
+    initMap();
+  });
+
+  document.getElementById('btn-decline').addEventListener('click', () => {
+    overlay.style.display = 'none';
+    denied.style.display = 'flex';
+    localStorage.setItem('consent', 'declined');
+  });
+
+  document.getElementById('btn-reopen').addEventListener('click', () => {
+    denied.style.display = 'none';
+    overlay.style.display = 'flex';
+  });
+
+  // Consent aus localStorage prüfen
+  const savedConsent = localStorage.getItem('consent');
+  if (savedConsent === 'accepted') {
+    overlay.style.display = 'none';
+    initMap();
+  } else if (savedConsent === 'declined') {
+    overlay.style.display = 'none';
+    denied.style.display = 'flex';
+  }
+
+  function initMap() {
+    if (mapInitialized) return;
+    mapInitialized = true;
+    map = L.map('map').setView([51.2, 6.8], 7);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap',
+      maxZoom: 14
+    }).addTo(map);
+    markerGroup = L.layerGroup().addTo(map);
+  }
 
   function kmToDeg(km) { return km / 111; }
 
@@ -142,9 +209,7 @@
   function planeIcon(heading) {
     return L.divIcon({
       html: `<div style="transform:rotate(${heading||0}deg);font-size:22px;line-height:1;">✈</div>`,
-      className: '',
-      iconSize: [26, 26],
-      iconAnchor: [13, 13]
+      className: '', iconSize: [26, 26], iconAnchor: [13, 13]
     });
   }
 
@@ -153,11 +218,7 @@
     const res = await fetch(url, { headers: { 'Accept-Language': 'de' } });
     const data = await res.json();
     if (!data.length) throw new Error('Ort nicht gefunden.');
-    return {
-      lat: parseFloat(data[0].lat),
-      lon: parseFloat(data[0].lon),
-      name: data[0].display_name.split(',')[0]
-    };
+    return { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon), name: data[0].display_name.split(',')[0] };
   }
 
   async function fetchFlights(lat, lon, radius) {
@@ -170,6 +231,7 @@
   }
 
   async function searchFlights() {
+    if (!mapInitialized) { alert('Bitte zuerst die Datenschutzerklärung akzeptieren.'); return; }
     const location = document.getElementById('location-input').value.trim();
     const radius = parseInt(document.getElementById('radius-input').value) || 100;
     const status = document.getElementById('status-bar');
@@ -189,8 +251,7 @@
 
       map.setView([geo.lat, geo.lon], 8);
       L.circle([geo.lat, geo.lon], {
-        radius: radius * 1000,
-        color: '#378ADD', fillColor: '#E6F1FB', fillOpacity: 0.2, weight: 1.5
+        radius: radius * 1000, color: '#378ADD', fillColor: '#E6F1FB', fillOpacity: 0.2, weight: 1.5
       }).addTo(markerGroup);
       L.marker([geo.lat, geo.lon]).bindPopup(`<b>${geo.name}</b>`).addTo(markerGroup);
 
@@ -228,10 +289,7 @@
             Speed: <b>${speed}</b><br>
             Entfernung: <b>${dist} km</b>
           </div>`;
-        card.addEventListener('click', () => {
-          map.setView([lat, lon], 11);
-          marker.openPopup();
-        });
+        card.addEventListener('click', () => { map.setView([lat, lon], 11); marker.openPopup(); });
         list.appendChild(card);
       });
 
