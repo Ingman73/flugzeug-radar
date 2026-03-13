@@ -11,79 +11,100 @@
 
     header {
       background: #fff; border-bottom: 1px solid #e0e0e0;
-      padding: 0.75rem 1.5rem; display: flex; align-items: center; justify-content: space-between;
+      padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between;
     }
-    header h1 { font-size: 20px; font-weight: 600; }
-    #refresh-info { font-size: 12px; color: #888; display: flex; align-items: center; gap: 8px; }
+    header h1 { font-size: 18px; font-weight: 600; }
+    #refresh-info { display: flex; align-items: center; gap: 8px; }
     #refresh-toggle {
-      padding: 4px 10px; font-size: 12px; border: 1px solid #ccc;
-      border-radius: 6px; cursor: pointer; background: #fff; color: #555;
+      padding: 5px 10px; font-size: 12px; border: 1px solid #ccc;
+      border-radius: 6px; cursor: pointer; background: #fff; color: #555; white-space: nowrap;
     }
     #refresh-toggle.active { background: #378ADD; color: #fff; border-color: #378ADD; }
-    #countdown { font-size: 12px; color: #aaa; min-width: 60px; }
+    #countdown { font-size: 12px; color: #aaa; min-width: 55px; }
 
     #controls {
-      background: #fff; padding: 0.75rem 1.5rem;
+      background: #fff; padding: 0.6rem 1rem;
       border-bottom: 1px solid #e0e0e0;
-      display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+      display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
     }
     #controls input[type="text"] {
-      flex: 1; min-width: 180px; padding: 8px 12px;
+      flex: 1; min-width: 140px; padding: 8px 10px;
       border: 1px solid #ccc; border-radius: 8px; font-size: 14px; outline: none;
     }
     #controls input[type="text"]:focus { border-color: #378ADD; }
     #controls input[type="number"] {
-      width: 75px; padding: 8px 10px;
+      width: 65px; padding: 8px 8px;
       border: 1px solid #ccc; border-radius: 8px; font-size: 14px; outline: none;
     }
-    #controls label { font-size: 14px; color: #555; }
+    #controls label { font-size: 13px; color: #555; }
     #controls button {
-      padding: 8px 20px; background: #378ADD; color: #fff;
+      padding: 8px 16px; background: #378ADD; color: #fff;
       border: none; border-radius: 8px; font-size: 14px; cursor: pointer; font-weight: 500;
     }
     #controls button:hover { background: #185FA5; }
     #controls button:disabled { background: #aaa; cursor: default; }
 
     #filter-bar {
-      background: #fff; padding: 0.6rem 1.5rem;
+      background: #fff; padding: 0.5rem 1rem;
       border-bottom: 1px solid #e0e0e0;
-      display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+      display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
     }
     #filter-bar label { font-size: 13px; color: #555; }
     #filter-country {
-      padding: 5px 10px; border: 1px solid #ccc; border-radius: 8px;
-      font-size: 13px; outline: none; min-width: 160px; background: #fff;
+      flex: 1; min-width: 120px; padding: 5px 8px;
+      border: 1px solid #ccc; border-radius: 8px;
+      font-size: 13px; outline: none; background: #fff;
     }
     #filter-country:focus { border-color: #378ADD; }
     #filter-reset {
       padding: 5px 12px; font-size: 13px; border: 1px solid #ccc;
-      border-radius: 8px; cursor: pointer; background: #fff; color: #555;
+      border-radius: 8px; cursor: pointer; background: #fff; color: #555; white-space: nowrap;
     }
     #filter-reset:hover { background: #f0f0f0; }
 
     #status-bar {
-      padding: 7px 1.5rem; font-size: 13px; color: #555;
-      background: #fafafa; border-bottom: 1px solid #e0e0e0; min-height: 32px;
+      padding: 6px 1rem; font-size: 12px; color: #555;
+      background: #fafafa; border-bottom: 1px solid #e0e0e0; min-height: 30px;
     }
 
-    #main { display: flex; height: calc(100vh - 195px); }
+    /* Desktop: Karte + Sidebar nebeneinander */
+    #main { display: flex; height: calc(100vh - 195px); min-height: 300px; }
     #map { flex: 1; }
-
     #sidebar {
-      width: 300px; background: #fff;
-      border-left: 1px solid #e0e0e0; overflow-y: auto; padding: 12px;
+      width: 280px; background: #fff;
+      border-left: 1px solid #e0e0e0; overflow-y: auto; padding: 10px;
     }
-    #sidebar h2 { font-size: 14px; color: #555; font-weight: 500; margin-bottom: 10px; }
+    #sidebar h2 { font-size: 13px; color: #555; font-weight: 500; margin-bottom: 8px; }
 
     .plane-card {
       background: #f9f9f9; border: 1px solid #e5e5e5;
-      border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; cursor: pointer;
+      border-radius: 8px; padding: 9px 11px; margin-bottom: 7px; cursor: pointer;
     }
     .plane-card:hover { border-color: #378ADD; background: #EBF4FD; }
-    .plane-card .callsign { font-size: 15px; font-weight: 600; }
-    .plane-card .detail { font-size: 12px; color: #666; margin-top: 5px; line-height: 1.7; }
+    .plane-card .callsign { font-size: 14px; font-weight: 600; }
+    .plane-card .detail { font-size: 12px; color: #666; margin-top: 4px; line-height: 1.7; }
     .plane-card .detail b { color: #1a1a1a; }
-    #empty-state { text-align: center; color: #aaa; font-size: 14px; margin-top: 40px; }
+    #empty-state { text-align: center; color: #aaa; font-size: 13px; margin-top: 30px; }
+
+    /* Mobile: Sidebar unter die Karte */
+    @media (max-width: 600px) {
+      header h1 { font-size: 16px; }
+      #countdown { display: none; }
+
+      #main { flex-direction: column; height: auto; }
+      #map { height: 55vw; min-height: 240px; max-height: 360px; }
+      #sidebar {
+        width: 100%; border-left: none;
+        border-top: 1px solid #e0e0e0;
+        max-height: 40vh; overflow-y: auto;
+      }
+
+      .plane-card { display: flex; align-items: center; gap: 10px; padding: 8px 10px; }
+      .plane-card .callsign { font-size: 13px; min-width: 70px; }
+      .plane-card .detail { font-size: 11px; margin-top: 0; }
+
+      #controls input[type="text"] { min-width: 0; }
+    }
 
     /* Consent Banner */
     #consent-overlay {
@@ -92,21 +113,21 @@
       z-index: 9999; padding: 1rem;
     }
     #consent-box {
-      background: #fff; border-radius: 12px; padding: 1.5rem;
-      max-width: 620px; width: 100%; margin-bottom: 1rem;
+      background: #fff; border-radius: 12px; padding: 1.25rem;
+      max-width: 620px; width: 100%; margin-bottom: 0.5rem;
     }
-    #consent-box h2 { font-size: 16px; font-weight: 600; margin-bottom: 10px; }
-    #consent-box p { font-size: 13px; color: #444; line-height: 1.6; margin-bottom: 10px; }
+    #consent-box h2 { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+    #consent-box p { font-size: 13px; color: #444; line-height: 1.6; margin-bottom: 8px; }
     #consent-box ul { font-size: 13px; color: #444; line-height: 1.9; margin: 0 0 1rem 1.2rem; }
     #consent-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
     #btn-accept {
-      padding: 9px 22px; background: #378ADD; color: #fff;
+      flex: 1; padding: 9px 16px; background: #378ADD; color: #fff;
       border: none; border-radius: 8px; font-size: 14px; cursor: pointer; font-weight: 500;
     }
     #btn-accept:hover { background: #185FA5; }
     #btn-decline {
-      padding: 9px 22px; background: #fff; color: #555;
-      border: 1px solid #ccc; border-radius: 8px; font-size: 14px; cursor: pointer;
+      flex: 1; padding: 9px 16px; background: #fff; color: #555;
+      border: 1px solid #ccc; border-radius: 8px; font-size: 14px; cursor: pointer; text-align: center;
     }
     #btn-decline:hover { background: #f5f5f5; }
     #consent-denied {
@@ -120,24 +141,22 @@
       padding: 9px 22px; background: #378ADD; color: #fff;
       border: none; border-radius: 8px; font-size: 14px; cursor: pointer; font-weight: 500;
     }
-    #btn-reopen:hover { background: #185FA5; }
   </style>
 </head>
 <body>
 
-<!-- Consent Banner -->
 <div id="consent-overlay">
   <div id="consent-box">
     <h2>🍪 Datenschutzhinweis</h2>
     <p>Diese App nutzt externe Dienste, bei denen deine IP-Adresse übertragen wird:</p>
     <ul>
-      <li><strong>OpenStreetMap</strong> – Kartenmaterial (tile.openstreetmap.org)</li>
-      <li><strong>Nominatim</strong> – Ortssuche (nominatim.openstreetmap.org)</li>
-      <li><strong>OpenSky Network</strong> – Echtzeit-Flugdaten (opensky-network.org)</li>
+      <li><strong>OpenStreetMap</strong> – Kartenmaterial</li>
+      <li><strong>Nominatim</strong> – Ortssuche</li>
+      <li><strong>OpenSky Network</strong> – Echtzeit-Flugdaten</li>
     </ul>
-    <p>Durch Klick auf <em>Akzeptieren</em> stimmst du der Nutzung dieser Dienste gemäß DSGVO zu.</p>
+    <p>Durch Klick auf <em>Akzeptieren</em> stimmst du der Nutzung gemäß DSGVO zu.</p>
     <div id="consent-buttons">
-      <button id="btn-accept">Akzeptieren & App starten</button>
+      <button id="btn-accept">Akzeptieren & starten</button>
       <button id="btn-decline">Ablehnen</button>
     </div>
   </div>
@@ -158,7 +177,7 @@
 </header>
 
 <div id="controls">
-  <input type="text" id="location-input" placeholder="Ort eingeben, z.B. Düsseldorf" value="Düsseldorf" />
+  <input type="text" id="location-input" placeholder="Ort, z.B. Düsseldorf" value="Düsseldorf" />
   <label>Radius:</label>
   <input type="number" id="radius-input" value="100" min="10" max="500" />
   <label>km</label>
@@ -166,7 +185,7 @@
 </div>
 
 <div id="filter-bar">
-  <label>Filter nach Herkunftsland:</label>
+  <label>Land:</label>
   <select id="filter-country"><option value="">Alle Länder</option></select>
   <button id="filter-reset">Zurücksetzen</button>
 </div>
@@ -187,10 +206,9 @@
 <script>
   let map, markerGroup, mapInitialized = false;
   let allPlanes = [], currentGeo = null, currentRadius = 100;
-  let refreshInterval = null, countdownInterval = null, refreshSeconds = 10;
+  let countdownInterval = null, refreshSeconds = 30;
   let autoRefreshActive = false;
 
-  // Consent
   const overlay = document.getElementById('consent-overlay');
   const denied = document.getElementById('consent-denied');
 
@@ -223,27 +241,22 @@
     markerGroup = L.layerGroup().addTo(map);
   }
 
-  // Auto-Refresh
   const refreshToggle = document.getElementById('refresh-toggle');
   const countdownEl = document.getElementById('countdown');
 
   refreshToggle.addEventListener('click', () => {
     autoRefreshActive = !autoRefreshActive;
     refreshToggle.classList.toggle('active', autoRefreshActive);
-    if (autoRefreshActive) {
-      startRefreshCycle();
-    } else {
-      stopRefreshCycle();
-    }
+    autoRefreshActive ? startRefreshCycle() : stopRefreshCycle();
   });
 
   function startRefreshCycle() {
     stopRefreshCycle();
     let remaining = refreshSeconds;
-    countdownEl.textContent = `Refresh in ${remaining}s`;
+    countdownEl.textContent = `${remaining}s`;
     countdownInterval = setInterval(() => {
       remaining--;
-      countdownEl.textContent = `Refresh in ${remaining}s`;
+      countdownEl.textContent = `${remaining}s`;
       if (remaining <= 0) {
         remaining = refreshSeconds;
         if (currentGeo) fetchAndRender();
@@ -253,11 +266,9 @@
 
   function stopRefreshCycle() {
     clearInterval(countdownInterval);
-    clearInterval(refreshInterval);
     countdownEl.textContent = '';
   }
 
-  // Filter
   document.getElementById('filter-country').addEventListener('change', renderPlanes);
   document.getElementById('filter-reset').addEventListener('click', () => {
     document.getElementById('filter-country').value = '';
@@ -314,18 +325,12 @@
       card.className = 'plane-card';
       card.innerHTML = `
         <div class="callsign">✈ ${callsign}</div>
-        <div class="detail">
-          Land: <b>${country}</b><br>
-          Höhe: <b>${alt}</b><br>
-          Speed: <b>${speed}</b><br>
-          Entfernung: <b>${dist} km</b>
-        </div>`;
+        <div class="detail">Land: <b>${country}</b> &nbsp;|&nbsp; Höhe: <b>${alt}</b> &nbsp;|&nbsp; Speed: <b>${speed}</b> &nbsp;|&nbsp; ${dist} km</div>`;
       card.addEventListener('click', () => { map.setView([lat, lon], 11); marker.openPopup(); });
       list.appendChild(card);
     });
   }
 
-  // Hilfsfunktionen
   function kmToDeg(km) { return km / 111; }
 
   function haversine(lat1, lon1, lat2, lon2) {
@@ -338,14 +343,11 @@
 
   function planeIcon(heading) {
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" style="transform:rotate(${heading||0}deg);display:block;">
-      <polygon points="14,2 18,18 14,15 10,18" fill="#000" stroke="#000" stroke-width="1.2"/>
-      <polygon points="8,13 4,16 14,15 24,16 20,13" fill="#000" stroke="#000" stroke-width="0.8"/>
-      <polygon points="11,19 9,22 14,21 19,22 17,19" fill="#000" stroke="#000" stroke-width="0.6"/>
+      <polygon points="14,2 18,18 14,15 10,18" fill="#1a6cb5" stroke="#fff" stroke-width="1.2"/>
+      <polygon points="8,13 4,16 14,15 24,16 20,13" fill="#1a6cb5" stroke="#fff" stroke-width="0.8"/>
+      <polygon points="11,19 9,22 14,21 19,22 17,19" fill="#1a6cb5" stroke="#fff" stroke-width="0.6"/>
     </svg>`;
-    return L.divIcon({
-      html: svg,
-      className: '', iconSize: [28, 28], iconAnchor: [14, 14]
-    });
+    return L.divIcon({ html: svg, className: '', iconSize: [28, 28], iconAnchor: [14, 14] });
   }
 
   async function geocode(location) {
@@ -372,9 +374,9 @@
       allPlanes = states.filter(s => s[5] && s[6] && haversine(currentGeo.lat, currentGeo.lon, s[6], s[5]) <= currentRadius);
       updateCountryFilter(allPlanes);
       renderPlanes();
-      status.textContent = `${allPlanes.length} Flugzeuge im Umkreis von ${currentRadius} km um ${currentGeo.name} – zuletzt aktualisiert: ${new Date().toLocaleTimeString('de-DE')}`;
+      status.textContent = `${allPlanes.length} Flugzeuge im Umkreis von ${currentRadius} km um ${currentGeo.name} – ${new Date().toLocaleTimeString('de-DE')}`;
     } catch(e) {
-      status.textContent = 'Fehler beim Aktualisieren: ' + e.message;
+      status.textContent = 'Fehler: ' + e.message;
     }
   }
 
@@ -384,7 +386,6 @@
     const radius = parseInt(document.getElementById('radius-input').value) || 100;
     const status = document.getElementById('status-bar');
     const btn = document.getElementById('search-btn');
-
     if (!location) { status.textContent = 'Bitte einen Ort eingeben.'; return; }
 
     btn.disabled = true;
@@ -403,7 +404,6 @@
       status.textContent = 'Fehler: ' + e.message;
       document.getElementById('plane-list').innerHTML = `<div id="empty-state">${e.message}</div>`;
     }
-
     btn.disabled = false;
   }
 
