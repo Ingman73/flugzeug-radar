@@ -9,21 +9,31 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: system-ui, sans-serif; background: #f5f5f5; color: #1a1a1a; }
 
-    header { background: #fff; border-bottom: 1px solid #e0e0e0; padding: 1rem 1.5rem; }
+    header {
+      background: #fff; border-bottom: 1px solid #e0e0e0;
+      padding: 0.75rem 1.5rem; display: flex; align-items: center; justify-content: space-between;
+    }
     header h1 { font-size: 20px; font-weight: 600; }
+    #refresh-info { font-size: 12px; color: #888; display: flex; align-items: center; gap: 8px; }
+    #refresh-toggle {
+      padding: 4px 10px; font-size: 12px; border: 1px solid #ccc;
+      border-radius: 6px; cursor: pointer; background: #fff; color: #555;
+    }
+    #refresh-toggle.active { background: #378ADD; color: #fff; border-color: #378ADD; }
+    #countdown { font-size: 12px; color: #aaa; min-width: 60px; }
 
     #controls {
-      background: #fff; padding: 1rem 1.5rem;
+      background: #fff; padding: 0.75rem 1.5rem;
       border-bottom: 1px solid #e0e0e0;
       display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
     }
     #controls input[type="text"] {
-      flex: 1; min-width: 200px; padding: 8px 12px;
+      flex: 1; min-width: 180px; padding: 8px 12px;
       border: 1px solid #ccc; border-radius: 8px; font-size: 14px; outline: none;
     }
     #controls input[type="text"]:focus { border-color: #378ADD; }
     #controls input[type="number"] {
-      width: 80px; padding: 8px 10px;
+      width: 75px; padding: 8px 10px;
       border: 1px solid #ccc; border-radius: 8px; font-size: 14px; outline: none;
     }
     #controls label { font-size: 14px; color: #555; }
@@ -34,12 +44,29 @@
     #controls button:hover { background: #185FA5; }
     #controls button:disabled { background: #aaa; cursor: default; }
 
+    #filter-bar {
+      background: #fff; padding: 0.6rem 1.5rem;
+      border-bottom: 1px solid #e0e0e0;
+      display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+    }
+    #filter-bar label { font-size: 13px; color: #555; }
+    #filter-country {
+      padding: 5px 10px; border: 1px solid #ccc; border-radius: 8px;
+      font-size: 13px; outline: none; min-width: 160px; background: #fff;
+    }
+    #filter-country:focus { border-color: #378ADD; }
+    #filter-reset {
+      padding: 5px 12px; font-size: 13px; border: 1px solid #ccc;
+      border-radius: 8px; cursor: pointer; background: #fff; color: #555;
+    }
+    #filter-reset:hover { background: #f0f0f0; }
+
     #status-bar {
-      padding: 8px 1.5rem; font-size: 13px; color: #555;
-      background: #fafafa; border-bottom: 1px solid #e0e0e0; min-height: 34px;
+      padding: 7px 1.5rem; font-size: 13px; color: #555;
+      background: #fafafa; border-bottom: 1px solid #e0e0e0; min-height: 32px;
     }
 
-    #main { display: flex; height: calc(100vh - 160px); }
+    #main { display: flex; height: calc(100vh - 195px); }
     #map { flex: 1; }
 
     #sidebar {
@@ -60,8 +87,7 @@
 
     /* Consent Banner */
     #consent-overlay {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.5);
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5);
       display: flex; align-items: flex-end; justify-content: center;
       z-index: 9999; padding: 1rem;
     }
@@ -83,8 +109,6 @@
       border: 1px solid #ccc; border-radius: 8px; font-size: 14px; cursor: pointer;
     }
     #btn-decline:hover { background: #f5f5f5; }
-
-    /* Abgelehnt-Ansicht */
     #consent-denied {
       display: none; position: fixed; inset: 0; background: #f5f5f5;
       align-items: center; justify-content: center; flex-direction: column;
@@ -111,7 +135,7 @@
       <li><strong>Nominatim</strong> – Ortssuche (nominatim.openstreetmap.org)</li>
       <li><strong>OpenSky Network</strong> – Echtzeit-Flugdaten (opensky-network.org)</li>
     </ul>
-    <p>Durch Klick auf <em>Akzeptieren</em> stimmst du der Nutzung dieser Dienste gemäß DSGVO zu. Du kannst die App auch ohne Zustimmung nicht vollständig nutzen, da die Kartenfunktion diese Dienste zwingend benötigt.</p>
+    <p>Durch Klick auf <em>Akzeptieren</em> stimmst du der Nutzung dieser Dienste gemäß DSGVO zu.</p>
     <div id="consent-buttons">
       <button id="btn-accept">Akzeptieren & App starten</button>
       <button id="btn-decline">Ablehnen</button>
@@ -119,15 +143,18 @@
   </div>
 </div>
 
-<!-- Abgelehnt-Ansicht -->
 <div id="consent-denied">
   <h2>✈ Flugzeug Radar</h2>
-  <p>Die App kann ohne Zustimmung nicht genutzt werden, da externe Dienste für Karte und Flugdaten erforderlich sind.</p>
+  <p>Die App kann ohne Zustimmung nicht genutzt werden, da externe Dienste erforderlich sind.</p>
   <button id="btn-reopen">Datenschutzhinweis erneut anzeigen</button>
 </div>
 
 <header>
   <h1>✈ Flugzeug Radar</h1>
+  <div id="refresh-info">
+    <button id="refresh-toggle">⟳ Auto-Refresh</button>
+    <span id="countdown"></span>
+  </div>
 </header>
 
 <div id="controls">
@@ -136,6 +163,12 @@
   <input type="number" id="radius-input" value="100" min="10" max="500" />
   <label>km</label>
   <button id="search-btn">Suchen</button>
+</div>
+
+<div id="filter-bar">
+  <label>Filter nach Herkunftsland:</label>
+  <select id="filter-country"><option value="">Alle Länder</option></select>
+  <button id="filter-reset">Zurücksetzen</button>
 </div>
 
 <div id="status-bar">Ort eingeben und auf Suchen klicken.</div>
@@ -153,8 +186,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
   let map, markerGroup, mapInitialized = false;
+  let allPlanes = [], currentGeo = null, currentRadius = 100;
+  let refreshInterval = null, countdownInterval = null, refreshSeconds = 30;
+  let autoRefreshActive = false;
 
-  // Consent-Logik
+  // Consent
   const overlay = document.getElementById('consent-overlay');
   const denied = document.getElementById('consent-denied');
 
@@ -163,39 +199,133 @@
     localStorage.setItem('consent', 'accepted');
     initMap();
   });
-
   document.getElementById('btn-decline').addEventListener('click', () => {
     overlay.style.display = 'none';
     denied.style.display = 'flex';
     localStorage.setItem('consent', 'declined');
   });
-
   document.getElementById('btn-reopen').addEventListener('click', () => {
     denied.style.display = 'none';
     overlay.style.display = 'flex';
   });
 
-  // Consent aus localStorage prüfen
   const savedConsent = localStorage.getItem('consent');
-  if (savedConsent === 'accepted') {
-    overlay.style.display = 'none';
-    initMap();
-  } else if (savedConsent === 'declined') {
-    overlay.style.display = 'none';
-    denied.style.display = 'flex';
-  }
+  if (savedConsent === 'accepted') { overlay.style.display = 'none'; initMap(); }
+  else if (savedConsent === 'declined') { overlay.style.display = 'none'; denied.style.display = 'flex'; }
 
   function initMap() {
     if (mapInitialized) return;
     mapInitialized = true;
     map = L.map('map').setView([51.2, 6.8], 7);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap',
-      maxZoom: 14
+      attribution: '© OpenStreetMap', maxZoom: 14
     }).addTo(map);
     markerGroup = L.layerGroup().addTo(map);
   }
 
+  // Auto-Refresh
+  const refreshToggle = document.getElementById('refresh-toggle');
+  const countdownEl = document.getElementById('countdown');
+
+  refreshToggle.addEventListener('click', () => {
+    autoRefreshActive = !autoRefreshActive;
+    refreshToggle.classList.toggle('active', autoRefreshActive);
+    if (autoRefreshActive) {
+      startRefreshCycle();
+    } else {
+      stopRefreshCycle();
+    }
+  });
+
+  function startRefreshCycle() {
+    stopRefreshCycle();
+    let remaining = refreshSeconds;
+    countdownEl.textContent = `Refresh in ${remaining}s`;
+    countdownInterval = setInterval(() => {
+      remaining--;
+      countdownEl.textContent = `Refresh in ${remaining}s`;
+      if (remaining <= 0) {
+        remaining = refreshSeconds;
+        if (currentGeo) fetchAndRender();
+      }
+    }, 1000);
+  }
+
+  function stopRefreshCycle() {
+    clearInterval(countdownInterval);
+    clearInterval(refreshInterval);
+    countdownEl.textContent = '';
+  }
+
+  // Filter
+  document.getElementById('filter-country').addEventListener('change', renderPlanes);
+  document.getElementById('filter-reset').addEventListener('click', () => {
+    document.getElementById('filter-country').value = '';
+    renderPlanes();
+  });
+
+  function updateCountryFilter(planes) {
+    const select = document.getElementById('filter-country');
+    const current = select.value;
+    const countries = [...new Set(planes.map(s => s[2]).filter(Boolean))].sort();
+    select.innerHTML = '<option value="">Alle Länder</option>';
+    countries.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c; opt.textContent = c;
+      if (c === current) opt.selected = true;
+      select.appendChild(opt);
+    });
+  }
+
+  function renderPlanes() {
+    const filterCountry = document.getElementById('filter-country').value;
+    const list = document.getElementById('plane-list');
+    markerGroup.clearLayers();
+
+    if (currentGeo) {
+      L.circle([currentGeo.lat, currentGeo.lon], {
+        radius: currentRadius * 1000, color: '#378ADD', fillColor: '#E6F1FB', fillOpacity: 0.2, weight: 1.5
+      }).addTo(markerGroup);
+      L.marker([currentGeo.lat, currentGeo.lon]).bindPopup(`<b>${currentGeo.name}</b>`).addTo(markerGroup);
+    }
+
+    const filtered = filterCountry ? allPlanes.filter(s => s[2] === filterCountry) : allPlanes;
+    document.getElementById('sidebar-title').textContent = `${filtered.length} Flugzeuge${filterCountry ? ' (' + filterCountry + ')' : ''}`;
+    list.innerHTML = '';
+
+    if (!filtered.length) {
+      list.innerHTML = '<div id="empty-state">Keine Flugzeuge gefunden.</div>';
+      return;
+    }
+
+    filtered.forEach(s => {
+      const callsign = (s[1] || 'N/A').trim();
+      const lat = s[6], lon = s[5];
+      const alt = s[7] ? Math.round(s[7]) + ' m' : '–';
+      const speed = s[9] ? Math.round(s[9] * 3.6) + ' km/h' : '–';
+      const heading = s[10] || 0;
+      const country = s[2] || '–';
+      const dist = Math.round(haversine(currentGeo.lat, currentGeo.lon, lat, lon));
+
+      const marker = L.marker([lat, lon], { icon: planeIcon(heading) }).addTo(markerGroup);
+      marker.bindPopup(`<b>✈ ${callsign}</b><br>Land: ${country}<br>Höhe: ${alt}<br>Speed: ${speed}<br>Entfernung: ${dist} km`);
+
+      const card = document.createElement('div');
+      card.className = 'plane-card';
+      card.innerHTML = `
+        <div class="callsign">✈ ${callsign}</div>
+        <div class="detail">
+          Land: <b>${country}</b><br>
+          Höhe: <b>${alt}</b><br>
+          Speed: <b>${speed}</b><br>
+          Entfernung: <b>${dist} km</b>
+        </div>`;
+      card.addEventListener('click', () => { map.setView([lat, lon], 11); marker.openPopup(); });
+      list.appendChild(card);
+    });
+  }
+
+  // Hilfsfunktionen
   function kmToDeg(km) { return km / 111; }
 
   function haversine(lat1, lon1, lat2, lon2) {
@@ -225,9 +355,22 @@
     const deg = kmToDeg(radius);
     const url = `https://opensky-network.org/api/states/all?lamin=${lat-deg}&lomin=${lon-deg}&lamax=${lat+deg}&lomax=${lon+deg}`;
     const res = await fetch(url);
-    if (!res.ok) throw new Error('OpenSky API nicht erreichbar – evtl. Rate-Limit, bitte kurz warten.');
+    if (!res.ok) throw new Error('OpenSky API nicht erreichbar – evtl. Rate-Limit, kurz warten.');
     const data = await res.json();
     return data.states || [];
+  }
+
+  async function fetchAndRender() {
+    const status = document.getElementById('status-bar');
+    try {
+      const states = await fetchFlights(currentGeo.lat, currentGeo.lon, currentRadius);
+      allPlanes = states.filter(s => s[5] && s[6] && haversine(currentGeo.lat, currentGeo.lon, s[6], s[5]) <= currentRadius);
+      updateCountryFilter(allPlanes);
+      renderPlanes();
+      status.textContent = `${allPlanes.length} Flugzeuge im Umkreis von ${currentRadius} km um ${currentGeo.name} – zuletzt aktualisiert: ${new Date().toLocaleTimeString('de-DE')}`;
+    } catch(e) {
+      status.textContent = 'Fehler beim Aktualisieren: ' + e.message;
+    }
   }
 
   async function searchFlights() {
@@ -235,67 +378,25 @@
     const location = document.getElementById('location-input').value.trim();
     const radius = parseInt(document.getElementById('radius-input').value) || 100;
     const status = document.getElementById('status-bar');
-    const list = document.getElementById('plane-list');
     const btn = document.getElementById('search-btn');
 
     if (!location) { status.textContent = 'Bitte einen Ort eingeben.'; return; }
 
     btn.disabled = true;
     status.textContent = 'Suche Koordinaten...';
-    list.innerHTML = '';
-    markerGroup.clearLayers();
+    document.getElementById('plane-list').innerHTML = '';
 
     try {
       const geo = await geocode(location);
-      status.textContent = `${geo.name} gefunden – lade Flugdaten von OpenSky...`;
-
+      currentGeo = geo;
+      currentRadius = radius;
       map.setView([geo.lat, geo.lon], 8);
-      L.circle([geo.lat, geo.lon], {
-        radius: radius * 1000, color: '#378ADD', fillColor: '#E6F1FB', fillOpacity: 0.2, weight: 1.5
-      }).addTo(markerGroup);
-      L.marker([geo.lat, geo.lon]).bindPopup(`<b>${geo.name}</b>`).addTo(markerGroup);
-
-      const states = await fetchFlights(geo.lat, geo.lon, radius);
-      const planes = states.filter(s => s[5] && s[6] && haversine(geo.lat, geo.lon, s[6], s[5]) <= radius);
-
-      status.textContent = `${planes.length} Flugzeug${planes.length !== 1 ? 'e' : ''} im Umkreis von ${radius} km um ${geo.name}`;
-      document.getElementById('sidebar-title').textContent = `${planes.length} Flugzeuge`;
-
-      if (!planes.length) {
-        list.innerHTML = '<div id="empty-state">Keine Flugzeuge gefunden.</div>';
-        btn.disabled = false;
-        return;
-      }
-
-      planes.forEach(s => {
-        const callsign = (s[1] || 'N/A').trim();
-        const lat = s[6], lon = s[5];
-        const alt = s[7] ? Math.round(s[7]) + ' m' : '–';
-        const speed = s[9] ? Math.round(s[9] * 3.6) + ' km/h' : '–';
-        const heading = s[10] || 0;
-        const country = s[2] || '–';
-        const dist = Math.round(haversine(geo.lat, geo.lon, lat, lon));
-
-        const marker = L.marker([lat, lon], { icon: planeIcon(heading) }).addTo(markerGroup);
-        marker.bindPopup(`<b>✈ ${callsign}</b><br>Land: ${country}<br>Höhe: ${alt}<br>Speed: ${speed}<br>Entfernung: ${dist} km`);
-
-        const card = document.createElement('div');
-        card.className = 'plane-card';
-        card.innerHTML = `
-          <div class="callsign">✈ ${callsign}</div>
-          <div class="detail">
-            Land: <b>${country}</b><br>
-            Höhe: <b>${alt}</b><br>
-            Speed: <b>${speed}</b><br>
-            Entfernung: <b>${dist} km</b>
-          </div>`;
-        card.addEventListener('click', () => { map.setView([lat, lon], 11); marker.openPopup(); });
-        list.appendChild(card);
-      });
-
-    } catch (e) {
+      status.textContent = `${geo.name} gefunden – lade Flugdaten...`;
+      await fetchAndRender();
+      if (autoRefreshActive) startRefreshCycle();
+    } catch(e) {
       status.textContent = 'Fehler: ' + e.message;
-      list.innerHTML = `<div id="empty-state">${e.message}</div>`;
+      document.getElementById('plane-list').innerHTML = `<div id="empty-state">${e.message}</div>`;
     }
 
     btn.disabled = false;
