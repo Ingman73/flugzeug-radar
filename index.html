@@ -337,9 +337,14 @@
   }
 
   function planeIcon(heading) {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" style="transform:rotate(${heading||0}deg);display:block;">
+      <polygon points="14,2 18,18 14,15 10,18" fill="#1a6cb5" stroke="#fff" stroke-width="1.2"/>
+      <polygon points="8,13 4,16 14,15 24,16 20,13" fill="#1a6cb5" stroke="#fff" stroke-width="0.8"/>
+      <polygon points="11,19 9,22 14,21 19,22 17,19" fill="#1a6cb5" stroke="#fff" stroke-width="0.6"/>
+    </svg>`;
     return L.divIcon({
-      html: `<div style="transform:rotate(${heading||0}deg);font-size:22px;line-height:1;">✈</div>`,
-      className: '', iconSize: [26, 26], iconAnchor: [13, 13]
+      html: svg,
+      className: '', iconSize: [28, 28], iconAnchor: [14, 14]
     });
   }
 
