@@ -376,17 +376,22 @@
   async function fetchAeroData(icao24, callsign) {
     if (!rapidApiKey) return null;
     try {
-      const url = `https://aerodatabox.p.rapidapi.com/flights/icao24/${icao24}?withAircraftImage=false&withLocation=false`;
+      // FREE TIER: Aircraft info per ICAO24 (verfügbar auf allen Plänen)
+      const url = `https://aerodatabox.p.rapidapi.com/aircraft/icao24/${icao24}`;
       const res = await fetch(url, {
         headers: {
           'X-RapidAPI-Key': rapidApiKey,
           'X-RapidAPI-Host': 'aerodatabox.p.rapidapi.com'
         }
       });
-      if (!res.ok) return null;
+      if (!res.ok) {
+        console.warn('AeroDataBox status:', res.status);
+        return null;
+      }
       const data = await res.json();
       return Array.isArray(data) ? data[0] : data;
     } catch(e) {
+      console.error('AeroDataBox error:', e);
       return null;
     }
   }
@@ -394,11 +399,12 @@
   function buildPopupExtra(aero) {
     if (!aero) return '<div class="popup-extra" style="color:#aaa;">Keine erweiterten Daten verfügbar.</div>';
     const lines = [];
-    if (aero.aircraft?.model) lines.push(`Typ: <b>${aero.aircraft.model}</b>`);
-    if (aero.airline?.name) lines.push(`Airline: <b>${aero.airline.name}</b>`);
-    if (aero.departure?.airport?.name) lines.push(`Von: <b>${aero.departure.airport.name}</b>`);
-    if (aero.arrival?.airport?.name) lines.push(`Nach: <b>${aero.arrival.airport.name}</b>`);
-    if (aero.status) lines.push(`Status: <b>${aero.status}</b>`);
+    if (aero.model) lines.push(`Typ: <b>${aero.model}</b>`);
+    if (aero.typeName) lines.push(`Bezeichnung: <b>${aero.typeName}</b>`);
+    if (aero.airlineName) lines.push(`Airline: <b>${aero.airlineName}</b>`);
+    if (aero.registration) lines.push(`Kennzeichen: <b>${aero.registration}</b>`);
+    if (aero.productionLine) lines.push(`Baureihe: <b>${aero.productionLine}</b>`);
+    if (aero.age) lines.push(`Alter: <b>${aero.age} Jahre</b>`);
     if (!lines.length) return '<div class="popup-extra" style="color:#aaa;">Keine Details gefunden.</div>';
     return `<div class="popup-extra">${lines.join('<br>')}</div>`;
   }
