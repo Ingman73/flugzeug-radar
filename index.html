@@ -391,9 +391,13 @@
 
       const card = document.createElement('div');
       card.className = 'plane-card';
+      if (isEmergency) card.style.borderColor = '#e74c3c';
       card.innerHTML = `
-        <div class="callsign">✈ ${callsign}</div>
-        <div class="detail">Land: <b>${country}</b> &nbsp;|&nbsp; Höhe: <b>${alt}</b> &nbsp;|&nbsp; Speed: <b>${speed}</b> &nbsp;|&nbsp; ${dist} km</div>`;
+        <div class="callsign">
+          <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${color};margin-right:6px;flex-shrink:0;vertical-align:middle;"></span>
+          ✈ ${callsign}${isEmergency ? ' <span style="color:#e74c3c;font-size:11px;">' + emergencyLabel + '</span>' : ''}
+        </div>
+        <div class="detail">Land: <b>${country}</b> &nbsp;|&nbsp; Höhe: <b>${alt}</b> &nbsp;|&nbsp; Speed: <b>${speed}</b> &nbsp;|&nbsp; ${dist} km &nbsp;|&nbsp; ${vsText}</div>`;
       card.addEventListener('click', () => { map.setView([lat, lon], 11); marker.openPopup(); });
       list.appendChild(card);
     });
