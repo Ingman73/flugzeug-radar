@@ -61,10 +61,6 @@
       border-radius: 8px; cursor: pointer; background: #fff; color: #555; white-space: nowrap;
     }
     #filter-reset:hover { background: #f0f0f0; }
-    #btn-clear-key {
-      padding: 5px 12px; font-size: 13px; border: 1px solid #f0a0a0;
-      border-radius: 8px; cursor: pointer; background: #fff; color: #c0392b; white-space: nowrap;
-    }
     #btn-clear-key:hover { background: #fff0f0; }
 
     #status-bar {
@@ -89,6 +85,14 @@
     .plane-card .detail { font-size: 12px; color: #666; margin-top: 4px; line-height: 1.7; }
     .plane-card .detail b { color: #1a1a1a; }
     #empty-state { text-align: center; color: #aaa; font-size: 13px; margin-top: 30px; }
+
+    #legend {
+      position: absolute; bottom: 24px; left: 10px; z-index: 1000;
+      background: rgba(255,255,255,0.92); border: 1px solid #ddd;
+      border-radius: 8px; padding: 8px 12px; font-size: 12px; line-height: 2;
+    }
+    #legend div { display: flex; align-items: center; gap: 6px; }
+    .leg-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
 
     /* Popup extra infos */
     .popup-loading { color: #aaa; font-size: 12px; font-style: italic; }
@@ -140,11 +144,6 @@
     #consent-denied p { font-size: 14px; color: #555; max-width: 420px; line-height: 1.6; }
     #btn-reopen { padding: 9px 22px; background: #378ADD; color: #fff; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; font-weight: 500; }
 
-    /* API Key Modal */
-    #apikey-overlay {
-      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-      align-items: center; justify-content: center; z-index: 9999; padding: 1rem;
-    }
     #apikey-box {
       background: #fff; border-radius: 12px; padding: 1.5rem;
       max-width: 480px; width: 100%;
@@ -181,7 +180,6 @@
       <li><strong>OpenStreetMap</strong> – Kartenmaterial</li>
       <li><strong>Nominatim</strong> – Ortssuche</li>
       <li><strong>OpenSky Network</strong> – Echtzeit-Flugdaten</li>
-      <li><strong>AeroDataBox</strong> – Erweiterte Flugzeugdaten (optional)</li>
     </ul>
     <p>Durch Klick auf <em>Akzeptieren</em> stimmst du der Nutzung gemäß DSGVO zu.</p>
     <div id="consent-buttons">
@@ -197,18 +195,6 @@
   <button id="btn-reopen">Datenschutzhinweis erneut anzeigen</button>
 </div>
 
-<!-- API Key Modal -->
-<div id="apikey-overlay">
-  <div id="apikey-box">
-    <h2>🔑 Aviationstack API Key eingeben</h2>
-    <p>Für erweiterte Flugzeuginfos (Airline, Route, Abflug/Ankunft) benötigst du einen kostenlosen API-Key von <a href="https://aviationstack.com" target="_blank">aviationstack.com</a>. Du kannst diesen Schritt auch überspringen – die App funktioniert auch ohne.</p>
-    <input type="text" id="apikey-input" placeholder="Deinen RapidAPI-Key hier einfügen..." />
-    <div id="apikey-buttons">
-      <button id="btn-apikey-save">Speichern</button>
-      <button id="btn-apikey-skip">Überspringen</button>
-    </div>
-  </div>
-</div>
 
 <header>
   <h1>✈ Flugzeug Radar</h1>
@@ -230,13 +216,20 @@
   <label>Land:</label>
   <select id="filter-country"><option value="">Alle Länder</option></select>
   <button id="filter-reset">Zurücksetzen</button>
-  <button id="btn-clear-key">🔑 API-Key ändern</button>
 </div>
 
 <div id="status-bar">Ort eingeben und auf Suchen klicken.</div>
 
 <div id="main">
-  <div id="map"></div>
+  <div id="map" style="position:relative;">
+    <div id="legend">
+      <div><span class="leg-dot" style="background:#27ae60"></span> Steigend</div>
+      <div><span class="leg-dot" style="background:#2980b9"></span> Sinkend</div>
+      <div><span class="leg-dot" style="background:#000"></span> Konstant</div>
+      <div><span class="leg-dot" style="background:#888"></span> Am Boden</div>
+      <div><span class="leg-dot" style="background:#e74c3c"></span> Notfall</div>
+    </div>
+  </div>
   <div id="sidebar">
     <h2 id="sidebar-title">Flugzeuge</h2>
     <div id="plane-list">
@@ -251,7 +244,6 @@
   let allPlanes = [], currentGeo = null, currentRadius = 100;
   let countdownInterval = null, refreshSeconds = 10;
   let autoRefreshActive = false;
-  let aviationstackKey = null;
 
   // Consent
   const overlay = document.getElementById('consent-overlay');
@@ -261,7 +253,6 @@
     overlay.style.display = 'none';
     localStorage.setItem('consent', 'accepted');
     initMap();
-    checkApiKey();
   });
   document.getElementById('btn-decline').addEventListener('click', () => {
     overlay.style.display = 'none';
@@ -277,41 +268,12 @@
   if (savedConsent === 'accepted') {
     overlay.style.display = 'none';
     initMap();
-    checkApiKey();
   } else if (savedConsent === 'declined') {
     overlay.style.display = 'none';
     denied.style.display = 'flex';
   }
 
-  // API Key
-  function checkApiKey() {
-    const stored = localStorage.getItem('aviationstackKey');
-    if (stored) {
-      aviationstackKey = stored;
-    } else {
-      document.getElementById('apikey-overlay').style.display = 'flex';
-    }
-  }
 
-  document.getElementById('btn-apikey-save').addEventListener('click', () => {
-    const val = document.getElementById('apikey-input').value.trim();
-    if (!val) { alert('Bitte einen Key eingeben oder Überspringen wählen.'); return; }
-    aviationstackKey = val;
-    localStorage.setItem('aviationstackKey', val);
-    document.getElementById('apikey-overlay').style.display = 'none';
-  });
-
-  document.getElementById('btn-apikey-skip').addEventListener('click', () => {
-    aviationstackKey = null;
-    document.getElementById('apikey-overlay').style.display = 'none';
-  });
-
-  document.getElementById('btn-clear-key').addEventListener('click', () => {
-    localStorage.removeItem('aviationstackKey');
-    aviationstackKey = null;
-    document.getElementById('apikey-input').value = '';
-    document.getElementById('apikey-overlay').style.display = 'flex';
-  });
 
   function initMap() {
     if (mapInitialized) return;
@@ -373,37 +335,7 @@
   }
 
   // AeroDataBox lookup (nur bei Klick)
-  async function fetchAeroData(icao24, callsign) {
-    if (!aviationstackKey) return null;
-    try {
-      const cs = callsign.trim();
-      if (!cs || cs === 'N/A') return null;
-      const url = `https://api.aviationstack.com/v1/flights?access_key=${aviationstackKey}&flight_icao=${encodeURIComponent(cs)}&limit=1`;
-      const res = await fetch(url);
-      if (!res.ok) { console.warn('Aviationstack status:', res.status); return null; }
-      const data = await res.json();
-      if (data.error) { console.warn('Aviationstack error:', data.error); return null; }
-      return data.data && data.data.length > 0 ? data.data[0] : null;
-    } catch(e) {
-      console.error('Aviationstack error:', e);
-      return null;
-    }
-  }
 
-  function buildPopupExtra(aero) {
-    if (!aero) return '<div class="popup-extra" style="color:#aaa;">Keine erweiterten Daten verfügbar.</div>';
-    const lines = [];
-    if (aero.airline?.name) lines.push(`Airline: <b>${aero.airline.name}</b>`);
-    if (aero.aircraft?.registration) lines.push(`Kennzeichen: <b>${aero.aircraft.registration}</b>`);
-    if (aero.aircraft?.iata) lines.push(`Flugzeugtyp: <b>${aero.aircraft.iata}</b>`);
-    if (aero.departure?.airport) lines.push(`Von: <b>${aero.departure.airport}</b>`);
-    if (aero.departure?.scheduled) lines.push(`Abflug: <b>${aero.departure.scheduled.replace('T',' ').slice(0,16)}</b>`);
-    if (aero.arrival?.airport) lines.push(`Nach: <b>${aero.arrival.airport}</b>`);
-    if (aero.arrival?.scheduled) lines.push(`Ankunft: <b>${aero.arrival.scheduled.replace('T',' ').slice(0,16)}</b>`);
-    if (aero.flight_status) lines.push(`Status: <b>${aero.flight_status}</b>`);
-    if (!lines.length) return '<div class="popup-extra" style="color:#aaa;">Keine Details gefunden.</div>';
-    return `<div class="popup-extra">${lines.join('<br>')}</div>`;
-  }
 
   function renderPlanes() {
     const filterCountry = document.getElementById('filter-country').value;
@@ -436,27 +368,26 @@
       const country = s[2] || '–';
       const dist = Math.round(haversine(currentGeo.lat, currentGeo.lon, lat, lon));
 
-      const marker = L.marker([lat, lon], { icon: planeIcon(heading) }).addTo(markerGroup);
+      const color = getPlaneColor(s);
+      const vsRaw = s[11];
+      const vsText = vsRaw > 0.5 ? '⬆ steigend' : vsRaw < -0.5 ? '⬇ sinkend' : '→ konstant';
+      const onGround = s[8];
+      const squawk = s[14] || '–';
+      const isEmergency = ['7500','7600','7700'].includes(s[14]);
+      const emergencyLabel = s[14] === '7700' ? '🚨 NOTFALL' : s[14] === '7500' ? '🚨 HIJACK' : s[14] === '7600' ? '🚨 FUNKAUSFALL' : '';
 
-      // Popup mit Basis-Infos + Platzhalter für AeroDataBox
-      const baseHtml = `
-        <b>✈ ${callsign}</b><br>
+      const marker = L.marker([lat, lon], { icon: planeIcon(heading, color) }).addTo(markerGroup);
+      marker.bindPopup(`
+        <b>✈ ${callsign}</b>${isEmergency ? ' <span style="color:red;font-weight:bold">' + emergencyLabel + '</span>' : ''}<br>
         Land: ${country}<br>
         Höhe: ${alt}<br>
         Speed: ${speed}<br>
-        Entfernung: ${dist} km
-        ${aviationstackKey ? '<div class="popup-loading" id="aero-'+icao24+'">Lade Details...</div>' : ''}`;
+        Entfernung: ${dist} km<br>
+        Vertikal: ${vsText}<br>
+        Status: ${onGround ? '🛞 Am Boden' : '✈ In der Luft'}<br>
+        Squawk: ${squawk}
+      `);
 
-      marker.bindPopup(baseHtml);
-
-      // AeroDataBox erst beim Öffnen des Popups laden
-      marker.on('popupopen', async () => {
-        if (!aviationstackKey) return;
-        const el = document.getElementById('aero-' + icao24);
-        if (!el) return;
-        const aero = await fetchAeroData(icao24, callsign);
-        if (el) el.outerHTML = buildPopupExtra(aero);
-      });
 
       const card = document.createElement('div');
       card.className = 'plane-card';
@@ -478,9 +409,20 @@
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
   }
 
-  function planeIcon(heading) {
+  function getPlaneColor(s) {
+    const squawk = s[14] || '';
+    const onGround = s[8];
+    const vs = s[11]; // vertical speed m/s
+    if (['7500','7600','7700'].includes(squawk)) return '#e74c3c'; // Notfall: rot
+    if (onGround) return '#888888'; // Am Boden: grau
+    if (vs > 0.5) return '#27ae60';  // Steigend: grün
+    if (vs < -0.5) return '#2980b9'; // Sinkend: blau
+    return '#000000'; // Höhe halten: schwarz
+  }
+
+  function planeIcon(heading, color) {
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 640 640" style="transform:rotate(${heading||0}deg);display:block;">
-      <path fill="#000" d="M264 88C264 57.1 289.1 32 320 32C350.9 32 376 57.1 376 88L376 215.3L549.6 374.5C556.2 380.6 560 389.1 560 398.1L560 441.8C560 452.7 549.3 460.4 538.9 457L376 402.7L376 502.4L442 555.2C445.8 558.2 448 562.8 448 567.7L448 587.5C448 597.9 438.2 605.5 428.1 603L320 576L211.9 603C201.8 605.5 192 597.9 192 587.5L192 567.7C192 562.8 194.2 558.2 198 555.2L264 502.4L264 402.7L101.1 457C90.7 460.4 80 452.7 80 441.8L80 398.1C80 389.1 83.8 380.6 90.4 374.5L264 215.3L264 88z"/>
+      <path fill="${color}" d="M264 88C264 57.1 289.1 32 320 32C350.9 32 376 57.1 376 88L376 215.3L549.6 374.5C556.2 380.6 560 389.1 560 398.1L560 441.8C560 452.7 549.3 460.4 538.9 457L376 402.7L376 502.4L442 555.2C445.8 558.2 448 562.8 448 567.7L448 587.5C448 597.9 438.2 605.5 428.1 603L320 576L211.9 603C201.8 605.5 192 597.9 192 587.5L192 567.7C192 562.8 194.2 558.2 198 555.2L264 502.4L264 402.7L101.1 457C90.7 460.4 80 452.7 80 441.8L80 398.1C80 389.1 83.8 380.6 90.4 374.5L264 215.3L264 88z"/>
     </svg>`;
     return L.divIcon({ html: svg, className: '', iconSize: [28, 28], iconAnchor: [14, 14] });
   }
