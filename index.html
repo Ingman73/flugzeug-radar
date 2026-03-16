@@ -199,7 +199,7 @@
 <header>
   <h1>✈ Flugzeug Radar</h1>
   <div id="refresh-info">
-    <button id="refresh-toggle">⟳ Auto-Refresh</button>
+    <button id="refresh-toggle">⟳ Auto-Refresh (5s)</button>
     <span id="countdown"></span>
   </div>
 </header>
@@ -242,7 +242,7 @@
 <script>
   let map, markerGroup, mapInitialized = false;
   let allPlanes = [], currentGeo = null, currentRadius = 100;
-  let countdownInterval = null, refreshSeconds = 10;
+  let countdownInterval = null, refreshSeconds = 5;
   let autoRefreshActive = false;
 
   // Consent
