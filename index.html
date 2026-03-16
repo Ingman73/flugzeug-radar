@@ -200,8 +200,8 @@
 <!-- API Key Modal -->
 <div id="apikey-overlay">
   <div id="apikey-box">
-    <h2>🔑 RapidAPI Key eingeben</h2>
-    <p>Für erweiterte Flugzeuginfos (Typ, Airline, Route) benötigst du einen kostenlosen RapidAPI-Key für AeroDataBox. Du kannst diesen Schritt auch überspringen – die App funktioniert auch ohne.</p>
+    <h2>🔑 Aviationstack API Key eingeben</h2>
+    <p>Für erweiterte Flugzeuginfos (Airline, Route, Abflug/Ankunft) benötigst du einen kostenlosen API-Key von <a href="https://aviationstack.com" target="_blank">aviationstack.com</a>. Du kannst diesen Schritt auch überspringen – die App funktioniert auch ohne.</p>
     <input type="text" id="apikey-input" placeholder="Deinen RapidAPI-Key hier einfügen..." />
     <div id="apikey-buttons">
       <button id="btn-apikey-save">Speichern</button>
@@ -251,7 +251,7 @@
   let allPlanes = [], currentGeo = null, currentRadius = 100;
   let countdownInterval = null, refreshSeconds = 10;
   let autoRefreshActive = false;
-  let rapidApiKey = null;
+  let aviationstackKey = null;
 
   // Consent
   const overlay = document.getElementById('consent-overlay');
@@ -285,9 +285,9 @@
 
   // API Key
   function checkApiKey() {
-    const stored = localStorage.getItem('rapidApiKey');
+    const stored = localStorage.getItem('aviationstackKey');
     if (stored) {
-      rapidApiKey = stored;
+      aviationstackKey = stored;
     } else {
       document.getElementById('apikey-overlay').style.display = 'flex';
     }
@@ -296,19 +296,19 @@
   document.getElementById('btn-apikey-save').addEventListener('click', () => {
     const val = document.getElementById('apikey-input').value.trim();
     if (!val) { alert('Bitte einen Key eingeben oder Überspringen wählen.'); return; }
-    rapidApiKey = val;
-    localStorage.setItem('rapidApiKey', val);
+    aviationstackKey = val;
+    localStorage.setItem('aviationstackKey', val);
     document.getElementById('apikey-overlay').style.display = 'none';
   });
 
   document.getElementById('btn-apikey-skip').addEventListener('click', () => {
-    rapidApiKey = null;
+    aviationstackKey = null;
     document.getElementById('apikey-overlay').style.display = 'none';
   });
 
   document.getElementById('btn-clear-key').addEventListener('click', () => {
-    localStorage.removeItem('rapidApiKey');
-    rapidApiKey = null;
+    localStorage.removeItem('aviationstackKey');
+    aviationstackKey = null;
     document.getElementById('apikey-input').value = '';
     document.getElementById('apikey-overlay').style.display = 'flex';
   });
@@ -374,24 +374,18 @@
 
   // AeroDataBox lookup (nur bei Klick)
   async function fetchAeroData(icao24, callsign) {
-    if (!rapidApiKey) return null;
+    if (!aviationstackKey) return null;
     try {
-      // FREE TIER: Aircraft info per ICAO24 (verfügbar auf allen Plänen)
-      const url = `https://aerodatabox.p.rapidapi.com/aircraft/icao24/${icao24}`;
-      const res = await fetch(url, {
-        headers: {
-          'X-RapidAPI-Key': rapidApiKey,
-          'X-RapidAPI-Host': 'aerodatabox.p.rapidapi.com'
-        }
-      });
-      if (!res.ok) {
-        console.warn('AeroDataBox status:', res.status);
-        return null;
-      }
+      const cs = callsign.trim();
+      if (!cs || cs === 'N/A') return null;
+      const url = `https://api.aviationstack.com/v1/flights?access_key=${aviationstackKey}&flight_icao=${encodeURIComponent(cs)}&limit=1`;
+      const res = await fetch(url);
+      if (!res.ok) { console.warn('Aviationstack status:', res.status); return null; }
       const data = await res.json();
-      return Array.isArray(data) ? data[0] : data;
+      if (data.error) { console.warn('Aviationstack error:', data.error); return null; }
+      return data.data && data.data.length > 0 ? data.data[0] : null;
     } catch(e) {
-      console.error('AeroDataBox error:', e);
+      console.error('Aviationstack error:', e);
       return null;
     }
   }
@@ -399,12 +393,14 @@
   function buildPopupExtra(aero) {
     if (!aero) return '<div class="popup-extra" style="color:#aaa;">Keine erweiterten Daten verfügbar.</div>';
     const lines = [];
-    if (aero.model) lines.push(`Typ: <b>${aero.model}</b>`);
-    if (aero.typeName) lines.push(`Bezeichnung: <b>${aero.typeName}</b>`);
-    if (aero.airlineName) lines.push(`Airline: <b>${aero.airlineName}</b>`);
-    if (aero.registration) lines.push(`Kennzeichen: <b>${aero.registration}</b>`);
-    if (aero.productionLine) lines.push(`Baureihe: <b>${aero.productionLine}</b>`);
-    if (aero.age) lines.push(`Alter: <b>${aero.age} Jahre</b>`);
+    if (aero.airline?.name) lines.push(`Airline: <b>${aero.airline.name}</b>`);
+    if (aero.aircraft?.registration) lines.push(`Kennzeichen: <b>${aero.aircraft.registration}</b>`);
+    if (aero.aircraft?.iata) lines.push(`Flugzeugtyp: <b>${aero.aircraft.iata}</b>`);
+    if (aero.departure?.airport) lines.push(`Von: <b>${aero.departure.airport}</b>`);
+    if (aero.departure?.scheduled) lines.push(`Abflug: <b>${aero.departure.scheduled.replace('T',' ').slice(0,16)}</b>`);
+    if (aero.arrival?.airport) lines.push(`Nach: <b>${aero.arrival.airport}</b>`);
+    if (aero.arrival?.scheduled) lines.push(`Ankunft: <b>${aero.arrival.scheduled.replace('T',' ').slice(0,16)}</b>`);
+    if (aero.flight_status) lines.push(`Status: <b>${aero.flight_status}</b>`);
     if (!lines.length) return '<div class="popup-extra" style="color:#aaa;">Keine Details gefunden.</div>';
     return `<div class="popup-extra">${lines.join('<br>')}</div>`;
   }
@@ -449,13 +445,13 @@
         Höhe: ${alt}<br>
         Speed: ${speed}<br>
         Entfernung: ${dist} km
-        ${rapidApiKey ? '<div class="popup-loading" id="aero-'+icao24+'">Lade Details...</div>' : ''}`;
+        ${aviationstackKey ? '<div class="popup-loading" id="aero-'+icao24+'">Lade Details...</div>' : ''}`;
 
       marker.bindPopup(baseHtml);
 
       // AeroDataBox erst beim Öffnen des Popups laden
       marker.on('popupopen', async () => {
-        if (!rapidApiKey) return;
+        if (!aviationstackKey) return;
         const el = document.getElementById('aero-' + icao24);
         if (!el) return;
         const aero = await fetchAeroData(icao24, callsign);
