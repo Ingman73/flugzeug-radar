@@ -195,7 +195,7 @@ async function fetchFlights(lat, lon, radius) {
   const deg = kmToDeg(radius);
   const url = `https://opensky-network.org/api/states/all?lamin=${lat-deg}&lomin=${lon-deg}&lamax=${lat+deg}&lomax=${lon+deg}`;
   const res = await fetch(url);
-  if (!res.ok) throw new Error('OpenSky API nicht erreichbar – evtl. Rate-Limit, kurz warten.');
+  if (!res.ok) throw new Error(`OpenSky API nicht erreichbar – evtl. Rate-Limit, kurz warten. (HTTP ${res.status} ${res.statusText})`);
   const data = await res.json();
   return data.states || [];
 }
