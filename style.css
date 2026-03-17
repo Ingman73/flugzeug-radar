@@ -14,9 +14,15 @@ header h1 { font-size: 18px; font-weight: 600; }
 #refresh-toggle.active { background: #378ADD; color: #fff; border-color: #378ADD; }
 #countdown { font-size: 12px; color: #aaa; min-width: 55px; }
 
+#wrapper {
+  display: flex; gap: 0; flex-wrap: wrap; align-items: center;
+}
+
 #controls {
-  background: #fff; padding: 0.6rem 1rem;
+  width: 66%;
+  background: #fff; padding: 1rem 1rem;
   border-bottom: 1px solid #e0e0e0;
+  border-right: 1px solid #e0e0e0;
   display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
 }
 #controls input[type="text"] {
@@ -37,13 +43,14 @@ header h1 { font-size: 18px; font-weight: 600; }
 #controls button:disabled { background: #aaa; cursor: default; }
 
 #filter-bar {
-  background: #fff; padding: 0.5rem 1rem;
+  width: 33%;
+  background: #fff; padding: 1rem 1rem;
   border-bottom: 1px solid #e0e0e0;
   display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
 }
 #filter-bar label { font-size: 13px; color: #555; }
 #filter-country {
-  flex: 1; min-width: 120px; padding: 5px 8px;
+  flex: 1; min-width: 120px; padding: 8px 10px;
   border: 1px solid #ccc; border-radius: 8px;
   font-size: 13px; outline: none; background: #fff;
 }
@@ -60,7 +67,7 @@ header h1 { font-size: 18px; font-weight: 600; }
   background: #fafafa; border-bottom: 1px solid #e0e0e0; min-height: 30px;
 }
 
-#main { display: flex; height: calc(100vh - 210px); min-height: 300px; }
+#main { display: flex; height: calc(100vh - 150px); min-height: 300px; }
 #map { flex: 1; }
 #sidebar {
   width: 280px; background: #fff;
@@ -90,6 +97,16 @@ header h1 { font-size: 18px; font-weight: 600; }
 .popup-loading { color: #aaa; font-size: 12px; font-style: italic; }
 .popup-extra { font-size: 12px; margin-top: 6px; border-top: 1px solid #eee; padding-top: 6px; line-height: 1.8; }
 .popup-extra b { color: #1a1a1a; }
+
+@media (max-width: 1200px) {
+  #controls { width: 50%; }
+  #filter-bar { width: 50%; }
+}
+
+@media (max-width: 768px) {
+  #controls { width: 100%; border-right: 0; }
+  #filter-bar { width: 100%; }
+}
 
 @media (max-width: 600px) {
   header h1 { font-size: 16px; }
