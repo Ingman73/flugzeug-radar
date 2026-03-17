@@ -1,6 +1,6 @@
 let map, markerGroup, mapInitialized = false;
 let allPlanes = [], currentGeo = null, currentRadius = 100;
-let countdownInterval = null, refreshSeconds = 5;
+let countdownInterval = null, refreshSeconds = 30;
 let autoRefreshActive = false;
 
 // Consent
